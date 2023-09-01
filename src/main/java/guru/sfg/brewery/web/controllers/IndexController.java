@@ -16,17 +16,20 @@
  */
 package guru.sfg.brewery.web.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * Created by jt on 2019-01-26.
  */
+@Slf4j
 @Controller
 public class IndexController {
 
     @GetMapping({"", "/"})
     public String index(){
+        log.debug("calling index");
         return "index";
     }
 }

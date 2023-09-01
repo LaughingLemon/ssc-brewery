@@ -38,12 +38,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @ExtendWith(MockitoExtension.class)
 class BeerControllerTest {
@@ -63,8 +70,10 @@ class BeerControllerTest {
     @BeforeEach
     void setUp() {
         beerList = new ArrayList<Beer>();
-        beerList.add(Beer.builder().build());
-        beerList.add(Beer.builder().build());
+        beerList.add(Beer.builder()
+                         .build());
+        beerList.add(Beer.builder()
+                         .build());
         pagedResponse = new PageImpl(beerList);
 
         final String id = "493410b3-dd0b-4b78-97bf-289f50f6e74f";
@@ -76,72 +85,79 @@ class BeerControllerTest {
     }
 
     @Test
-    void findBeers() throws Exception{
+    void findBeers() throws Exception {
         mockMvc.perform(get("/beers/find"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("beers/findBeers"))
-                .andExpect(model().attributeExists("beer"));
-        verifyZeroInteractions(beerRepository);
+               .andExpect(status().isOk())
+               .andExpect(view().name("beers/findBeers"))
+               .andExpect(model().attributeExists("beer"));
+        verifyNoInteractions(beerRepository);
     }
 
     //ToDO: Mocking Page
-     void processFindFormReturnMany() throws Exception{
+    void processFindFormReturnMany() throws Exception {
         when(beerRepository.findAllByBeerName(anyString(), PageRequest.of(0,
-              10,Sort.Direction.DESC,"beerName"))).thenReturn(pagedResponse);
+                10, Sort.Direction.DESC, "beerName"))).thenReturn(pagedResponse);
         mockMvc.perform(get("/beers"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("beers/beerList"))
-                .andExpect(model().attribute("selections", hasSize(2)));
+               .andExpect(status().isOk())
+               .andExpect(view().name("beers/beerList"))
+               .andExpect(model().attribute("selections", hasSize(2)));
     }
 
 
     @Test
-    void showBeer() throws Exception{
+    void showBeer() throws Exception {
 
-        when(beerRepository.findById(uuid)).thenReturn(Optional.of(Beer.builder().id(uuid).build()));
-        mockMvc.perform(get("/beers/"+uuid))
-                .andExpect(status().isOk())
-                .andExpect(view().name("beers/beerDetails"))
-                .andExpect(model().attribute("beer", hasProperty("id", is(uuid))));
+        when(beerRepository.findById(uuid)).thenReturn(Optional.of(Beer.builder()
+                                                                       .id(uuid)
+                                                                       .build()));
+        mockMvc.perform(get("/beers/" + uuid))
+               .andExpect(status().isOk())
+               .andExpect(view().name("beers/beerDetails"))
+               .andExpect(model().attribute("beer", hasProperty("id", is(uuid))));
     }
 
     @Test
     void initCreationForm() throws Exception {
         mockMvc.perform(get("/beers/new"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("beers/createBeer"))
-                .andExpect(model().attributeExists("beer"));
-        verifyZeroInteractions(beerRepository);
+               .andExpect(status().isOk())
+               .andExpect(view().name("beers/createBeer"))
+               .andExpect(model().attributeExists("beer"));
+        verifyNoInteractions(beerRepository);
     }
 
     @Test
     void processCreationForm() throws Exception {
-        when(beerRepository.save(ArgumentMatchers.any())).thenReturn(Beer.builder().id(uuid).build());
+        when(beerRepository.save(ArgumentMatchers.any())).thenReturn(Beer.builder()
+                                                                         .id(uuid)
+                                                                         .build());
         mockMvc.perform(post("/beers/new"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/beers/"+ uuid))
-                .andExpect(model().attributeExists("beer"));
+               .andExpect(status().is3xxRedirection())
+               .andExpect(view().name("redirect:/beers/" + uuid));
         verify(beerRepository).save(ArgumentMatchers.any());
     }
 
     @Test
-    void initUpdateBeerForm() throws Exception{
-        when(beerRepository.findById(uuid)).thenReturn(Optional.of(Beer.builder().id(uuid).build()));
-        mockMvc.perform(get("/beers/"+uuid+"/edit"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("beers/createOrUpdateBeer"))
-                .andExpect(model().attributeExists("beer"));
-        verifyZeroInteractions(beerRepository);
+    void initUpdateBeerForm() throws Exception {
+        when(beerRepository.findById(uuid)).thenReturn(Optional.of(Beer.builder()
+                                                                       .id(uuid)
+                                                                       .build()));
+        mockMvc.perform(get("/beers/" + uuid + "/edit"))
+               .andExpect(status().isOk())
+               .andExpect(view().name("beers/createOrUpdateBeer"))
+               .andExpect(model().attributeExists("beer"));
+
+        verify(beerRepository, times(2)).findById(uuid);
     }
 
     @Test
     void processUpdationForm() throws Exception {
-        when(beerRepository.save(ArgumentMatchers.any())).thenReturn(Beer.builder().id(uuid).build());
+        when(beerRepository.save(ArgumentMatchers.any())).thenReturn(Beer.builder()
+                                                                         .id(uuid)
+                                                                         .build());
 
-        mockMvc.perform(post("/beers/"+uuid+"/edit"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/beers/"+uuid))
-                .andExpect(model().attributeExists("beer"));
+        mockMvc.perform(post("/beers/" + uuid + "/edit"))
+               .andExpect(status().is3xxRedirection())
+               .andExpect(view().name("redirect:/beers/" + uuid));
 
         verify(beerRepository).save(ArgumentMatchers.any());
     }

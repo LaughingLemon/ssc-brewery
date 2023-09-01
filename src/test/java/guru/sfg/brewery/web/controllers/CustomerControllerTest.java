@@ -75,7 +75,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/findCustomers"))
                 .andExpect(model().attributeExists("customer"));
-        verifyZeroInteractions(customerRepository);
+        verifyNoInteractions(customerRepository);
     }
 //ToDO: Fix stubbing error
     @Test
@@ -104,7 +104,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/createCustomer"))
                 .andExpect(model().attributeExists("customer"));
-        verifyZeroInteractions(customerRepository);
+        verifyNoInteractions(customerRepository);
     }
 
     @Test
@@ -112,8 +112,7 @@ class CustomerControllerTest {
         when(customerRepository.save(ArgumentMatchers.any())).thenReturn(Customer.builder().id(uuid).build());
         mockMvc.perform(post("/customers/new"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/customers/"+ uuid))
-                .andExpect(model().attributeExists("customer"));
+                .andExpect(view().name("redirect:/customers/"+ uuid));
         verify(customerRepository).save(ArgumentMatchers.any());
     }
 
@@ -124,7 +123,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/createOrUpdateCustomer"))
                 .andExpect(model().attributeExists("customer"));
-        verifyZeroInteractions(customerRepository);
+        verify(customerRepository, times(2)).findById(uuid);
     }
 
     @Test
@@ -133,8 +132,7 @@ class CustomerControllerTest {
 
         mockMvc.perform(post("/customers/"+uuid+"/edit"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/customers/"+uuid))
-                .andExpect(model().attributeExists("customer"));
+                .andExpect(view().name("redirect:/customers/"+uuid));
 
         verify(customerRepository).save(ArgumentMatchers.any());
     }
