@@ -8,8 +8,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -46,7 +46,7 @@ public class SecurityConfiguration {
                                 .roles("ADMIN")
                                 .build();
         UserDetails user = User.withUsername("user")
-                               .password("e3c04cf35ac309b8155df425e70b34ea48012eacd30680cf2e482705a0dc3e5f68842c23b204972f")
+                               .password("$2a$10$7aLHzJ.ywdrlihAwgopoa.4utl4iFHGSAJ13AMspyASltxlZbAQu.")
                                .roles("USER")
                                .build();
         return new InMemoryUserDetailsManager(user, admin);
@@ -54,6 +54,6 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new StandardPasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 }
