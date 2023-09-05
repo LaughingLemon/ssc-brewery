@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({SecurityConfiguration.class})
 public class BeerControllerSecurityTest extends BaseIntegrationTest {
 
-    @WithMockUser("user")
+    @WithMockUser()
     @Test
     public void findBeers() throws Exception {
         mvc.perform(get("/beers/find"))
@@ -31,6 +31,15 @@ public class BeerControllerSecurityTest extends BaseIntegrationTest {
     @Test
     public void findBeersWithBasicAuthUser() throws Exception {
         mvc.perform(get("/beers/find").with(httpBasic("user", "password")))
+           .andExpect(status().isOk())
+           .andExpect(view().name("beers/findBeers"))
+           .andExpect(model().attributeExists("beer"));
+        verifyNoInteractions(beerRepository);
+    }
+
+    @Test
+    public void findBeersWithBasicAuthSpringUser() throws Exception {
+        mvc.perform(get("/beers/find").with(httpBasic("spring", "password")))
            .andExpect(status().isOk())
            .andExpect(view().name("beers/findBeers"))
            .andExpect(model().attributeExists("beer"));

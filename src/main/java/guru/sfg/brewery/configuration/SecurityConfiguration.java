@@ -9,11 +9,13 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
@@ -50,11 +52,20 @@ public class SecurityConfiguration {
                                .password("{bcrypt}$2a$10$7aLHzJ.ywdrlihAwgopoa.4utl4iFHGSAJ13AMspyASltxlZbAQu.")
                                .roles("USER")
                                .build();
-        return new InMemoryUserDetailsManager(user, admin);
+        UserDetails springUser = User.withUsername("spring")
+                               .password("{bcrypt15}$2a$15$PQNH5woatbMfrWrgvKvW6ekkSvkA08IB2CBKUjMqx.e/Hv4lTO/ZS")
+                               .roles("USER")
+                               .build();
+        return new InMemoryUserDetailsManager(user, admin, springUser);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        String encodingId = "bcrypt";
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(encodingId, new BCryptPasswordEncoder());
+        encoders.put("noop", org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
+        encoders.put("bcrypt15", new BCryptPasswordEncoder(15));
+        return new DelegatingPasswordEncoder(encodingId, encoders);
     }
 }
