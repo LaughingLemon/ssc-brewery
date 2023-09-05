@@ -29,8 +29,17 @@ public class BeerControllerSecurityTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void findBeersWithBasicAuth() throws Exception {
+    public void findBeersWithBasicAuthUser() throws Exception {
         mvc.perform(get("/beers/find").with(httpBasic("user", "password")))
+           .andExpect(status().isOk())
+           .andExpect(view().name("beers/findBeers"))
+           .andExpect(model().attributeExists("beer"));
+        verifyNoInteractions(beerRepository);
+    }
+
+    @Test
+    public void findBeersWithBasicAuthAdmin() throws Exception {
+        mvc.perform(get("/beers/find").with(httpBasic("admin", "password")))
            .andExpect(status().isOk())
            .andExpect(view().name("beers/findBeers"))
            .andExpect(model().attributeExists("beer"));
