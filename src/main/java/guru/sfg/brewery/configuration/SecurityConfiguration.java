@@ -1,8 +1,11 @@
 package guru.sfg.brewery.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -13,6 +16,7 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +24,13 @@ import java.util.Map;
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+        log.info("filterChain start");
         http.authorizeHttpRequests(authz -> authz.requestMatchers(antMatcher("/"),
                                                                   antMatcher("/login"),
                                                                   antMatcher("/webjars/**"),
@@ -39,7 +45,16 @@ public class SecurityConfiguration {
                                                  .authenticated())
             .formLogin(withDefaults())
             .httpBasic(withDefaults());
+
+        http.securityMatcher(antMatcher(HttpMethod.DELETE, "/api/v1/beer/**"))
+            .addFilterAfter(new RestAuthorizationFilter(authenticationManager),
+                            UsernamePasswordAuthenticationFilter.class);
         return http.build();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean

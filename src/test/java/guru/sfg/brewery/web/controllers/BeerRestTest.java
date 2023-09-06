@@ -15,7 +15,11 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +46,29 @@ public class BeerRestTest extends BaseIntegrationTest {
 
         mvc.perform(get("/api/v1/beer/493410b3-dd0b-4b78-97bf-289f50f6e74f"))
            .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteBeerById() throws Exception {
+        final String id = "493410b3-dd0b-4b78-97bf-289f50f6e74f";
+        UUID uuid = UUID.fromString(id);
+
+        mvc.perform(delete("/api/v1/beer/493410b3-dd0b-4b78-97bf-289f50f6e74f")
+                            .with(csrf())
+                            .header("Api-key", "spring")
+                            .header("Api-secret", "password"))
+           .andExpect(status().isNoContent());
+
+        verify(beerService).deleteById(uuid);
+    }
+
+    @Test
+    public void deleteBeerByIdInvalid() throws Exception {
+        mvc.perform(delete("/api/v1/beer/493410b3-dd0b-4b78-97bf-289f50f6e74f")
+                            .with(csrf()))
+           .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(beerService);
     }
 
     @Test
