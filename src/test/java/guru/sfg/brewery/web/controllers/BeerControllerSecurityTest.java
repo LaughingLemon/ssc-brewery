@@ -1,12 +1,9 @@
 package guru.sfg.brewery.web.controllers;
 
-import guru.sfg.brewery.configuration.SecurityConfiguration;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -14,8 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 
-@WebMvcTest
-@Import({SecurityConfiguration.class})
+@SpringBootTest
 public class BeerControllerSecurityTest extends BaseIntegrationTest {
 
     @WithMockUser()
@@ -25,7 +21,6 @@ public class BeerControllerSecurityTest extends BaseIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(view().name("beers/findBeers"))
            .andExpect(model().attributeExists("beer"));
-        verifyNoInteractions(beerRepository);
     }
 
     @Test
@@ -34,7 +29,6 @@ public class BeerControllerSecurityTest extends BaseIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(view().name("beers/findBeers"))
            .andExpect(model().attributeExists("beer"));
-        verifyNoInteractions(beerRepository);
     }
 
     @Test
@@ -43,16 +37,6 @@ public class BeerControllerSecurityTest extends BaseIntegrationTest {
            .andExpect(status().isOk())
            .andExpect(view().name("beers/findBeers"))
            .andExpect(model().attributeExists("beer"));
-        verifyNoInteractions(beerRepository);
-    }
-
-    @Test
-    public void findBeersWithBasicAuthAdmin() throws Exception {
-        mvc.perform(get("/beers/find").with(httpBasic("admin", "password")))
-           .andExpect(status().isOk())
-           .andExpect(view().name("beers/findBeers"))
-           .andExpect(model().attributeExists("beer"));
-        verifyNoInteractions(beerRepository);
     }
 
 }

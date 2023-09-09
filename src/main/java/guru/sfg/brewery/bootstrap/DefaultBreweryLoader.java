@@ -16,8 +16,18 @@
  */
 package guru.sfg.brewery.bootstrap;
 
-import guru.sfg.brewery.domain.*;
-import guru.sfg.brewery.repositories.*;
+import guru.sfg.brewery.domain.Beer;
+import guru.sfg.brewery.domain.BeerInventory;
+import guru.sfg.brewery.domain.BeerOrder;
+import guru.sfg.brewery.domain.BeerOrderLine;
+import guru.sfg.brewery.domain.Brewery;
+import guru.sfg.brewery.domain.Customer;
+import guru.sfg.brewery.domain.OrderStatusEnum;
+import guru.sfg.brewery.repositories.BeerInventoryRepository;
+import guru.sfg.brewery.repositories.BeerOrderRepository;
+import guru.sfg.brewery.repositories.BeerRepository;
+import guru.sfg.brewery.repositories.BreweryRepository;
+import guru.sfg.brewery.repositories.CustomerRepository;
 import guru.sfg.brewery.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
