@@ -63,72 +63,71 @@ public class DefaultBreweryLoader implements CommandLineRunner {
 
     private void loadCustomerData() {
         Customer tastingRoom = Customer.builder()
-                .customerName(TASTING_ROOM)
-                .apiKey(UUID.randomUUID())
-                .build();
+                                       .customerName(TASTING_ROOM)
+                                       .apiKey(UUID.randomUUID())
+                                       .build();
 
         customerRepository.save(tastingRoom);
 
-        beerRepository.findAll().forEach(beer -> {
-            beerOrderRepository.save(BeerOrder.builder()
-                    .customer(tastingRoom)
-                    .orderStatus(OrderStatusEnum.NEW)
-                    .beerOrderLines(Set.of(BeerOrderLine.builder()
-                            .beer(beer)
-                            .orderQuantity(2)
-                            .build()))
-                    .build());
-        });
+        beerRepository.findAll()
+                      .forEach(beer -> beerOrderRepository.save(BeerOrder.builder()
+                                                                         .customer(tastingRoom)
+                                                                         .orderStatus(OrderStatusEnum.NEW)
+                                                                         .beerOrderLines(Set.of(BeerOrderLine.builder()
+                                                                                                             .beer(beer)
+                                                                                                             .orderQuantity(2)
+                                                                                                             .build()))
+                                                                         .build()));
     }
 
     private void loadBreweryData() {
         if (breweryRepository.count() == 0) {
             breweryRepository.save(Brewery
-                    .builder()
-                    .breweryName("Cage Brewing")
-                    .build());
+                                           .builder()
+                                           .breweryName("Cage Brewing")
+                                           .build());
 
             Beer mangoBobs = Beer.builder()
-                    .beerName("Mango Bobs")
-                    .beerStyle(BeerStyleEnum.IPA)
-                    .minOnHand(12)
-                    .quantityToBrew(200)
-                    .upc(BEER_1_UPC)
-                    .build();
+                                 .beerName("Mango Bobs")
+                                 .beerStyle(BeerStyleEnum.IPA)
+                                 .minOnHand(12)
+                                 .quantityToBrew(200)
+                                 .upc(BEER_1_UPC)
+                                 .build();
 
             beerRepository.save(mangoBobs);
             beerInventoryRepository.save(BeerInventory.builder()
-                    .beer(mangoBobs)
-                    .quantityOnHand(500)
-                    .build());
+                                                      .beer(mangoBobs)
+                                                      .quantityOnHand(500)
+                                                      .build());
 
             Beer galaxyCat = Beer.builder()
-                    .beerName("Galaxy Cat")
-                    .beerStyle(BeerStyleEnum.PALE_ALE)
-                    .minOnHand(12)
-                    .quantityToBrew(200)
-                    .upc(BEER_2_UPC)
-                    .build();
+                                 .beerName("Galaxy Cat")
+                                 .beerStyle(BeerStyleEnum.PALE_ALE)
+                                 .minOnHand(12)
+                                 .quantityToBrew(200)
+                                 .upc(BEER_2_UPC)
+                                 .build();
 
             beerRepository.save(galaxyCat);
             beerInventoryRepository.save(BeerInventory.builder()
-                    .beer(galaxyCat)
-                    .quantityOnHand(500)
-                    .build());
+                                                      .beer(galaxyCat)
+                                                      .quantityOnHand(500)
+                                                      .build());
 
             Beer pinball = Beer.builder()
-                    .beerName("Pinball Porter")
-                    .beerStyle(BeerStyleEnum.PORTER)
-                    .minOnHand(12)
-                    .quantityToBrew(200)
-                    .upc(BEER_3_UPC)
-                    .build();
+                               .beerName("Pinball Porter")
+                               .beerStyle(BeerStyleEnum.PORTER)
+                               .minOnHand(12)
+                               .quantityToBrew(200)
+                               .upc(BEER_3_UPC)
+                               .build();
 
             beerRepository.save(pinball);
             beerInventoryRepository.save(BeerInventory.builder()
-                    .beer(pinball)
-                    .quantityOnHand(500)
-                    .build());
+                                                      .beer(pinball)
+                                                      .quantityOnHand(500)
+                                                      .build());
 
         }
     }
