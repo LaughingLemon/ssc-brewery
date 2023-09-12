@@ -18,6 +18,7 @@ public class DefaultSecurityLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private Authority userRole;
     private Authority customerRole;
+    private Authority adminRole;
 
     @Override
     public void run(String... args) {
@@ -29,7 +30,7 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         User springUser = User.builder()
                               .username("spring")
                               .password("{bcrypt15}$2a$15$PQNH5woatbMfrWrgvKvW6ekkSvkA08IB2CBKUjMqx.e/Hv4lTO/ZS")
-                              .authority(userRole)
+                              .authority(adminRole)
                               .build();
         if (userRepository.findBy(Example.of(springUser), FluentQuery.FetchableFluentQuery::first)
                           .isEmpty()) {
@@ -56,8 +57,8 @@ public class DefaultSecurityLoader implements CommandLineRunner {
     }
 
     private void loadAuthorityData() {
-        Authority adminRole = Authority.builder()
-                                       .role("ADMIN")
+        adminRole = Authority.builder()
+                                       .role("ROLE_ADMIN")
                                        .build();
         if (authorityRepository.findBy(Example.of(adminRole),
                                        FluentQuery.FetchableFluentQuery::first)
@@ -66,7 +67,7 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         }
 
         userRole = Authority.builder()
-                            .role("USER")
+                            .role("ROLE_USER")
                             .build();
         if (authorityRepository.findBy(Example.of(userRole),
                                        FluentQuery.FetchableFluentQuery::first)
@@ -74,7 +75,7 @@ public class DefaultSecurityLoader implements CommandLineRunner {
             userRole = authorityRepository.save(userRole);
         }
         customerRole = Authority.builder()
-                                .role("CUSTOMER")
+                                .role("ROLE_CUSTOMER")
                                 .build();
         if (authorityRepository.findBy(Example.of(customerRole),
                                        FluentQuery.FetchableFluentQuery::first)

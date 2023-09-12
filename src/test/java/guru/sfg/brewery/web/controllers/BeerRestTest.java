@@ -3,7 +3,6 @@ package guru.sfg.brewery.web.controllers;
 import guru.sfg.brewery.domain.Beer;
 import guru.sfg.brewery.web.model.BeerDto;
 import guru.sfg.brewery.web.model.BeerPagedList;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -47,7 +46,6 @@ public class BeerRestTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Disabled
     public void deleteBeerById() throws Exception {
         final String id = "493410b3-dd0b-4b78-97bf-289f50f6e74f";
         UUID uuid = UUID.fromString(id);
@@ -59,6 +57,28 @@ public class BeerRestTest extends BaseIntegrationTest {
            .andExpect(status().isNoContent());
 
         verify(beerService).deleteById(uuid);
+    }
+
+    @Test
+    public void deleteBeerByIdWithUserRole() throws Exception {
+        mvc.perform(delete("/api/v1/beer/493410b3-dd0b-4b78-97bf-289f50f6e74f")
+                            .with(csrf())
+                            .header("Api-key", "user")
+                            .header("Api-secret", "password"))
+           .andExpect(status().is4xxClientError());
+
+        verifyNoInteractions(beerService);
+    }
+
+    @Test
+    public void deleteBeerByIdWithCustomerRole() throws Exception {
+        mvc.perform(delete("/api/v1/beer/493410b3-dd0b-4b78-97bf-289f50f6e74f")
+                            .with(csrf())
+                            .header("Api-key", "scott")
+                            .header("Api-secret", "password"))
+           .andExpect(status().is4xxClientError());
+
+        verifyNoInteractions(beerService);
     }
 
     @Test
