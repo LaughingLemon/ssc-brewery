@@ -43,6 +43,8 @@ public class SecurityConfiguration {
                                                          .permitAll()
                                                          .requestMatchers(HttpMethod.DELETE, "/api/v1/beer/**")
                                                          .hasRole("ADMIN")
+                                                         .requestMatchers("/brewery/breweries/**")
+                                                         .hasRole("CUSTOMER")
                                                          .anyRequest()
                                                          .authenticated())
             .formLogin(withDefaults())
