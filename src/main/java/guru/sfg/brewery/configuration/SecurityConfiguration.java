@@ -44,7 +44,7 @@ public class SecurityConfiguration {
                                                          .requestMatchers(HttpMethod.DELETE, "/api/v1/beer/**")
                                                          .hasRole("ADMIN")
                                                          .requestMatchers("/brewery/breweries/**")
-                                                         .hasRole("CUSTOMER")
+                                                         .hasAnyRole("ADMIN", "CUSTOMER")
                                                          .anyRequest()
                                                          .authenticated())
             .formLogin(withDefaults())

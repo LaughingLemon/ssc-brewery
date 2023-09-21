@@ -21,6 +21,14 @@ public class BreweryControllerTest  extends BaseIntegrationTest {
     }
 
     @Test
+    public void listBreweriesWithAdmin() throws Exception {
+        mvc.perform(get("/brewery/breweries").with(httpBasic("spring", "password")))
+           .andExpect(status().isOk())
+           .andExpect(view().name("breweries/index"))
+           .andExpect(model().attributeExists("breweries"));
+    }
+
+    @Test
     public void listBreweriesWithUser() throws Exception {
         mvc.perform(get("/brewery/breweries").with(httpBasic("user", "password")))
            .andExpect(status().isForbidden());
