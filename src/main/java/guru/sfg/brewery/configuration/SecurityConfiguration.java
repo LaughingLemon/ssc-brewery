@@ -35,8 +35,10 @@ public class SecurityConfiguration {
 
         http.authorizeHttpRequests(authorize -> authorize.requestMatchers("/", "/webjars/**", "/login", "/resources/**")
                                                          .permitAll()
-                                                         .requestMatchers("/beers/find", "/beers*")
+                                                         .requestMatchers("/beers*")
                                                          .permitAll()
+                                                         .requestMatchers("/beers/find")
+                                                         .hasAnyRole("ADMIN", "CUSTOMER", "USER")
                                                          .requestMatchers(HttpMethod.GET, "/api/v1/beer/**")
                                                          .permitAll()
                                                          .requestMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}")
