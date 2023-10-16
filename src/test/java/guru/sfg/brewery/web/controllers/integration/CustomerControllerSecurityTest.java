@@ -1,6 +1,5 @@
-package guru.sfg.brewery.web.controllers;
+package guru.sfg.brewery.web.controllers.integration;
 
-import guru.sfg.brewery.domain.Customer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,8 +8,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,7 +21,7 @@ public class CustomerControllerSecurityTest extends BaseIntegrationTest {
     @DisplayName("List customers")
     class ListCustomersTests {
         @ParameterizedTest(name = "#{index} with [{arguments}]")
-        @MethodSource("guru.sfg.brewery.web.controllers.BaseIntegrationTest#getStreamAdminAndCustomerUsers")
+        @MethodSource("guru.sfg.brewery.web.controllers.integration.BaseIntegrationTest#getStreamAdminAndCustomerUsers")
         public void testCustomerSecurity(String user, String password) throws Exception {
             mvc.perform(get("/customers").with(httpBasic(user, password)))
                .andExpect(status().isOk())
@@ -50,8 +47,6 @@ public class CustomerControllerSecurityTest extends BaseIntegrationTest {
         @Rollback
         @Test
         public void testCustomerSecurity() throws Exception {
-            when(customerRepository.save(any())).thenReturn(Customer.builder().build());
-
             mvc.perform(post("/customers/new")
                                 .param("customerName", "A Customer")
                                 .with(httpBasic("spring", "password")))
@@ -59,7 +54,7 @@ public class CustomerControllerSecurityTest extends BaseIntegrationTest {
         }
 
         @ParameterizedTest(name = "#{index} with [{arguments}]")
-        @MethodSource("guru.sfg.brewery.web.controllers.BaseIntegrationTest#getStreamUserAndCustomerUsers")
+        @MethodSource("guru.sfg.brewery.web.controllers.integration.BaseIntegrationTest#getStreamUserAndCustomerUsers")
         public void testCustomerSecurityForbidden(String user, String password) throws Exception {
             mvc.perform(post("/customers/new").with(httpBasic(user, password)))
                .andExpect(status().isForbidden());

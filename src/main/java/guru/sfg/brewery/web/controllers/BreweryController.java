@@ -17,6 +17,7 @@
 
 package guru.sfg.brewery.web.controllers;
 
+import guru.sfg.brewery.configuration.annotations.BreweryReadAccess;
 import guru.sfg.brewery.domain.Brewery;
 import guru.sfg.brewery.services.BreweryService;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +37,13 @@ public class BreweryController {
 
     private final BreweryService breweryService;
 
+    @BreweryReadAccess
     @GetMapping({"/breweries", "/breweries/index", "/breweries/index.html", "/breweries.html"})
     public String listBreweries(Model model) {
         model.addAttribute("breweries", breweryService.getAllBreweries());
         return "breweries/index";
     }
+    @BreweryReadAccess
     @GetMapping("/api/v1/breweries")
     public @ResponseBody
     List<Brewery> getBreweriesJson(){

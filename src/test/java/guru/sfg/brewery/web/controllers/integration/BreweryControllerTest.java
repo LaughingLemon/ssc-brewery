@@ -1,4 +1,4 @@
-package guru.sfg.brewery.web.controllers;
+package guru.sfg.brewery.web.controllers.integration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

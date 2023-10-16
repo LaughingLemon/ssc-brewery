@@ -16,6 +16,9 @@
  */
 package guru.sfg.brewery.domain;
 
+import guru.sfg.brewery.domain.security.User;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,5 +56,8 @@ public class Customer extends BaseEntity {
 
     @OneToMany(mappedBy = "customer")
     private Set<BeerOrder> beerOrders;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<User> users;
 
 }
